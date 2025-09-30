@@ -3,6 +3,7 @@ package main
 import (
 	"bookstore/controller"
 	"bookstore/db"
+	"bookstore/model"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,16 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
+
+func RoutesControl(router *mux.Router) {
+
+	router.HandleFunc("/books", controller.GetAllBooksHandler).Methods("GET")
+	// router.HandleFunc("/books/{id}", controller.CreateBookHandler).Methods("GET")
+	router.HandleFunc("/books", controller.CreateManyBooksHandler).Methods("POST")
+	// router.HandleFunc("/books/{id}", controller.UpdateBook).Methods("PUT")
+	// router.HandleFunc("/books/{id}", controller.DeleteBook).Methods("DELETE")
+
+}
 
 func main() {
 	// Load .env
@@ -23,17 +34,17 @@ func main() {
 	port := os.Getenv("PORT")
 
 	// Connect to MongoDB
-	client, database, err := db.ConnectDB(mongoURI, dbName)
+	client, _, err := db.ConnectDB(mongoURI, dbName)
 	if err != nil {
 		log.Fatal("Mongo connection failed:", err)
 	}
 
 	// Initialize collections
-	controller.InitCollections(client, database)
-
+	// controller.InitCollections(client, database)
+	model.InitCollections(client, dbName)
 	// Create router
 	r := mux.NewRouter()
-
+	RoutesControl(r)
 	// Register routes
 	// controller.RegisterRoutes(r)
 

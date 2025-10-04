@@ -1,0 +1,118 @@
+Go teams take advantage of the language's features for developing software:
+
+A standard library is based on the use of distributed packages and makes it easy to add and use additional functionality in code.
+Code package management allows for the management of user-created and external code packages, and enables publishing packages using a small set of commands.
+Static typing provides a type system that ensures conversions and compatibility while avoiding issues that come with dynamically typed languages.
+Support for testing includes unit tests that run in parallel with written code and allow for debugging and quality assurance.
+Platform independence takes advantage of Go's modular design to let its code be compiled on almost any platform.
+A concurrency model is based on lightweight goroutines that behave like threads and a channel mechanism that facilitates communication between goroutines. The code's syntax mimics the fundamental patterns commonly used in dynamic languages and favors composition interfaces over inheritance. This enables developers to write programs that can perform multiple tasks at once.
+Graphic showing steps of the programming lifecycle.
+Statically typed languages check a variable's type early in the programming lifecycle and compile time, whereas dynamically typed languages can update type at runtime.
+The following are some of Go's tools:
+
+Gofmt automatically formats and indents code for readability.
+Go run compiles and runs code simultaneously.
+Go get integrates with GitHub.
+Godoc generates Hypertext Markup Language-based documentation according to the code structure and developer comments.
+Go test runs unit tests and benchmarks, enabling code testing and the gathering of performance data.
+Go build compiles Go packages and dependencies into an executable library.
+Go vet examines Go source code for mistakes and suspicious constructs.
+
+Benefits of Go
+The benefits of using Go include the following:
+
+quick compilation and execution speed;
+doesn't need a VM;
+portability;
+concurrency;
+interfaces enable loosely coupled systems;
+automatic garbage collection;
+memory safety;
+independent error handling; and
+extensive built-in libraries.
+Limitations of Go
+Go does have some drawbacks, such as the following:
+
+despite the addition of generics, still specializes in simple, readable code over abstract, implicit code;
+lacks runtime safety;
+enforces strict rules;
+is incompatible with function overloading; and
+isn't conventionally object-oriented.
+What is Go used for?
+Software development teams use Go to create a variety of software applications:
+
+Container services. Container services such as Docker and Kubernetes use Go for its concurrency and portability.
+Network and cloud services. Go's concurrency features and ecosystem of tools and APIs make it well suited for network services, distributed functions and cloud services. For instance, cloud services such as OpenShift and Terraform use Go to create APIs and high-performance web servers. Bitcoin's Lightning Network and other complex blockchain technologies use Go.
+Web services. The Hypertext Transfer Protocol server built into Go's standard library makes it useful for companies such as Netflix and Twitch to develop web services and server-side architecture.
+Command-line utilities. Companies such as Terraform and OpenShift use Go's simple syntax, short runtime, open source code packages and relatively large standard library to create command-line interfaces.
+Utilities. Go programs launch quickly and can be easily redistributed because of its minimal compilation. This makes Go good for creating tools such as access servers like Teleport.
+Microservices. Go language's fast startup time, low runtime overhead and ability to run without a VM make it quite popular for writing microservices. Companies such as Uber and the BBC use it for this purpose.
+Data science. Go's concurrency and memory management make it a good option for data scientists to process and analyze large data sets in parallel. Go and its libraries can also be used in machine learning to develop predictive models and perform other tasks.
+Descriptions of popular cloud programming languages and frameworks.
+Go is one of several popular cloud programming languages.
+How does Go compare with other programming languages?
+Golang has features similar to other programming languages, but it provides a unique alternative: The main design goal of Go is to facilitate fast compilation, unlike some of the other common languages.
+
+C++
+Go and C++ have key differences, such as the following:
+
+Go reduces the amount of runtime errors and dependencies while increasing memory safety and memory management. C++ doesn't do all that because it uses manual memory management.
+Go uses simpler and more modern syntax than C++.
+Go makes it easier to write concurrent and parallel code because it has built-in support for concurrency through goroutines and channels, unlike C++, which relies on threads and locks.
+Go has a smaller standard library than C++.
+Ruby
+Go's key differences with Ruby are the following:
+
+Go uses a simpler syntax than Ruby.
+Go uses a static type system that helps catch errors during compilation; Ruby requires an interpreter to compile and run code, meaning it can take longer to compile.
+Go uses built-in concurrency, while Ruby relies on threads and locks, making Go better for concurrent code.
+Go has a smaller standard library than Ruby.
+Java
+Go and Java's key differences are the following:
+
+Go uses a simpler syntax than Java.
+Go's runtime and compilation speed is generally faster than Java, which requires a VM to run its code.
+Go uses built-in concurrency, while Java relies on threads and locks.
+Go has a smaller standard library than Java.
+
+Learning the Go programming language
+Go is known to be simple and easy for beginners to learn. Go's website provides resources to learn Go, such as interactive tutorials, tours of Go, guides and explainer articles. A demo of Go is available on its homepage where potential users can try it out.
+
+One of the best ways to learn Go is through its official Go tutorials. These tutorials cover the basics of the language and let beginners execute Go code alongside instructions. Users can reference Go's official documentation while going through the tutorial, learn concepts in real time and apply their knowledge to challenges in the tutorial.
+
+Programmers can also experiment on their own small Go projects and engage with the online Go community to learn the language. The online community contains blogs, YouTube videos and active users on websites such as Reddit. The Go DevOps community also provides its own courses and modules on how to learn the language.
+
+Learn the basics of Golang from this DevOps engineer's experience.
+
+Continue Reading About Go programming language
+What Golang generics support means for code structure
+A 7-point language comparison of Ballerina vs. Golang
+How to make and use maps in Golang
+Explore the pros and cons of Go for DevOps
+Compare Go vs. Python: What are the differences?
+Related Terms
+What is a standard operating procedure (SOP)?
+A standard operating procedure is a set of step-by-step instructions for performing a routine activity. See complete definition
+What is autonomic computing?
+Autonomic computing is a concept in computer science that refers to systems capable of managing themselves with minimal human ... See complete definition
+What is hardware security?
+Hardware security is vulnerability protection that comes in the form of a physical device rather than software installed on a ... See complete definition
+Dig Deeper on DevOps
+The 7 benefits of JavaCameronMcKenzie
+By: Cameron McKenzie
+Learn how to use concurrency in Go with this tutorialWalkerAldridge
+By: Walker Aldridge
+What is a script?RahulAwati
+By: Rahul Awati
+10 dying or 'dead' programming languagesChrisTozzi
+By: Chris Tozzi
+Sponsored News
+It’s Restores That Matter for User Productivity
+–Exagrid
+Using Member Engagement to Balance Personalization, Participation
+–Zelis Healthcare
+See More
+Vendor Resources
+A Computer Weekly buyer’s guide to modern software development practices
+–TechTarget ComputerWeekly.com
+A Computer Weekly buyer's guide to modern software development practices

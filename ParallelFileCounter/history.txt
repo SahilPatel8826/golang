@@ -1,0 +1,5 @@
+Google created Go to solve its own software engineering issues and provide an alternative to C++. Also, a language with higher productivity levels was needed at the time as multicore processors became more popular.
+
+Google began designing Go in 2007. Go developers wanted to create a programming language that was easier to use, but still had the useful characteristics found in other languages such as C++, Python and JavaScript. Go was announced in 2009 as an open source project where community members could collaborate on ideas and code. Version 1.0 was later released in 2012.
+
+Over the years, new updates and features were added, such as generics in 2022. Go's popularity has continued to grow as it is used by high-profile companies, such as Google, Cloudflare, Dropbox, MongoDB, Netflix, SoundCloud, Twitch and Uber.

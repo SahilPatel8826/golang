@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"postgres/middleware" // <-- replace 'yourproject' with your actual module name
+	routes "postgres/router"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -12,13 +16,11 @@ func main() {
 	db := middleware.CreateConnection()
 	defer db.Close()
 
-	// Run a simple SQL query to verify connection
-	var currentTime string
-	err := db.QueryRow("SELECT NOW()").Scan(&currentTime)
-	if err != nil {
-		log.Fatal("Error executing test query:", err)
-	}
+	r := mux.NewRouter()
+	routes.RoutesControl(r)
 
 	fmt.Println("✅ Connected to PostgreSQL successfully!")
-	fmt.Println("Current database time:", currentTime)
+	fmt.Println("Starting server on the port 8080")
+
+	log.Fatal(http.ListenAndServe(":8000", r))
 }

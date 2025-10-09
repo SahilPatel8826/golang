@@ -7,10 +7,10 @@ import (
 )
 
 type Stock struct {
-	StockID int    `json:"id"`
-	Name    string `json:"name"`
-	Price   int    `json:"price"`
-	Company string `json:"company"`
+	StockID int     `json:"id"`
+	Name    *string `json:"name"`
+	Price   *int    `json:"price"`
+	Company *string `json:"company"`
 }
 
 // // Returns SQL to create table
@@ -30,18 +30,18 @@ func CreateStock(s Stock) error {
 	sqlStatement := `
 	INSERT INTO stock (name, price, company)
 	VALUES($1, $2, $3)
-	RETURNING id;
+	RETURNING stock_id;
 	`
-	id := 0
-	err := db.QueryRow(sqlStatement, s.Name, s.Price, s.Company).Scan(&id)
+	stock_id := 0
+	err := db.QueryRow(sqlStatement, s.Name, s.Price, s.Company).Scan(&stock_id)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("New record ID is:", id)
+	fmt.Println("New record ID is:", stock_id)
 	return nil
 }
-func GetStocks() ([]Stock, error) {
+func GetAllStocks() ([]Stock, error) {
 	db := middleware.CreateConnection()
 	defer db.Close()
 	var stocks []Stock
@@ -63,4 +63,74 @@ func GetStocks() ([]Stock, error) {
 		fmt.Println(stocks[i])
 	}
 	return stocks, nil
+}
+func GetStocks(id string) (Stock, error) {
+	db := middleware.CreateConnection()
+	defer db.Close()
+
+	var s Stock
+	sqlStatement := `SELECT * FROM stock WHERE stock_id = $1`
+	row := db.QueryRow(sqlStatement, id)
+
+	err := row.Scan(&s.StockID, &s.Name, &s.Price, &s.Company)
+	if err != nil {
+		return s, err
+	}
+
+	return s, nil
+}
+
+func DeleteStock(id string) {
+
+	db := middleware.CreateConnection()
+	defer db.Close()
+
+	sqlStatement := `DELETE FROM stock WHERE stock_id = $1;`
+	result, err := db.Exec(sqlStatement, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	fmt.Println("Deleted rows:", rowsAffected)
+
+}
+func UpdateStock(id string, s Stock) (Stock, error) {
+	db := middleware.CreateConnection()
+	defer db.Close()
+
+	// First, fetch the current stock
+	var current Stock
+	err := db.QueryRow(`SELECT stock_id, name, price, company FROM stock WHERE stock_id=$1`, id).
+		Scan(&current.StockID, &current.Name, &current.Price, &current.Company)
+	if err != nil {
+		return Stock{}, fmt.Errorf("stock not found: %v", err)
+	}
+
+	// Only update fields that are non-nil
+	if s.Name != nil {
+		current.Name = s.Name
+	}
+	if s.Price != nil {
+		current.Price = s.Price
+	}
+	if s.Company != nil {
+		current.Company = s.Company
+	}
+
+	// Update in DB
+	sqlStatement := `
+		UPDATE stock
+		SET name=$1, price=$2, company=$3
+		WHERE stock_id=$4
+		RETURNING stock_id, name, price, company;
+	`
+
+	err = db.QueryRow(sqlStatement, current.Name, current.Price, current.Company, id).
+		Scan(&current.StockID, &current.Name, &current.Price, &current.Company)
+	if err != nil {
+		return Stock{}, fmt.Errorf("update failed: %v", err)
+	}
+
+	return current, nil
 }

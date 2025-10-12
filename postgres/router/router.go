@@ -15,5 +15,8 @@ func RoutesControl(router *mux.Router) {
 	router.HandleFunc("/api/newstock", handler.GetAllStockHandler).Methods("GET")
 	router.HandleFunc("/api/stock/{id}", handler.GetStockHandler).Methods("GET")
 	router.HandleFunc("/api/newstock", handler.CreateStockHandler).Methods("POST")
+	router.HandleFunc("/api/user", handler.RegisterUserHandler).Methods("POST")
+
+	router.HandleFunc("/api/login", handler.LoginUserHandler).Methods("POST")
 
 }

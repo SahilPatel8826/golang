@@ -14,7 +14,8 @@ import (
 // ConnectDB connects to MongoDB Atlas and returns a client instance
 func ConnectDB() *mongo.Client {
 	// MongoDB Atlas URI (use env vars in production!)
-	uri := "link here"
+
+	uri := "mongo compass link here"
 
 	// Configure Stable API
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)

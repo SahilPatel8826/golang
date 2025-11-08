@@ -66,5 +66,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	id := result.InsertedID.(primitive.ObjectID).Hex()
 
-	json.NewEncoder(w).Encode(id)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "User created successfully",
+		"id":      id,
+	})
 }

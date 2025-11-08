@@ -1,13 +1,13 @@
 package main
 
 import (
+	"chatapp/websocket"
 	"fmt"
 	"net/http"
-
-	"github.com/gorilla/websocket"
 )
 
 func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("WebSocket Endpoint Hit")
 	conn, err := websocket.Upgrade(w, r)
 	if err != nil {
 		fmt.Println(err)

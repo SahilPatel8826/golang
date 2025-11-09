@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini WhatsApp</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chat-container {
+      width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .header {
+      background-color: #075E54;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 10px;
+      background-color: #ECE5DD;
+      overflow-y: auto;
+      height: 400px;
+    }
+
+    .message {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 70%;
+      clear: both;
+    }
+
+    .sent {
+      background-color: #DCF8C6;
+      float: right;
+      text-align: right;
+    }
+
+    .received {
+      background-color: white;
+      float: left;
+      text-align: left;
+    }
+
+    .input-container {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+
+    .input-container input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input-container button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #075E54;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .id-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .id-container input {
+      padding: 5px;
+      font-size: 14px;
+      width: 180px;
+    }
+
+    .id-container button {
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="id-container">
+    <input id="userID" placeholder="Enter your ID" />
+    <input id="receiverID" placeholder="Enter receiver ID" />
+    <button onclick="connect()">Connect</button>
+  </div>
+
+  <div class="chat-container" style="display:none;" id="chatBox">
+    <div class="header">Mini WhatsApp Chat</div>
+    <div class="messages" id="messages"></div>
+    <div class="input-container">
+      <input id="message" placeholder="Type a message"/>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    let ws;
+    let userID;
+    let receiverID;
+
+    function connect() {
+      userID = document.getElementById("userID").value;
+      receiverID = document.getElementById("receiverID").value;
+
+      if (!userID || !receiverID) {
+        alert("Please enter both IDs!");
+        return;
+      }
+
+      document.getElementById("chatBox").style.display = "flex";
+
+      ws = new WebSocket(`ws://localhost:9000/ws?user_id=${userID}`);
+
+      ws.onmessage = function(event) {
+        const msg = JSON.parse(event.data);
+        const messagesDiv = document.getElementById("messages");
+        const div = document.createElement("div");
+        div.classList.add("message");
+        div.classList.add(msg.sender_id === userID ? "sent" : "received");
+        div.textContent = `${msg.sender_id}:${msg.content}`;
+        messagesDiv.appendChild(div);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+    }
+
+    function sendMessage() {
+      const content = document.getElementById("message").value;
+      if(!content) return;
+      ws.send(JSON.stringify({ sender_id: userID, receiver_id: receiverID, content }));
+      document.getElementById("message").value = '';
+    }
+  </script>
+</body>
+</html>

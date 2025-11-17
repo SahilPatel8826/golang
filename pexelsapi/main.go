@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 )
 
 const (
-	PhotoApi = ""
-	VideoApi = ""
+	PhotoApi = "https://api.pexels.com/v1"
+	VideoApi = "https://api.pexels.com/videos"
 )
 
 type Client struct {
@@ -43,6 +46,14 @@ type Photo struct {
 	Src             PhotoSource `json:"src"`
 }
 
+type CuratedResult struct {
+	Page         int32   `json:"page"`
+	PerPage      int32   `json:"per_page"`
+	NextPage     string  `json:"next_page"`
+	TotalResults int32   `json:"total_results"`
+	Photos       []Photo `json:"photos"`
+}
+
 type PhotoSource struct {
 	Original  string `json:"original"`
 	Large     string `json:"large"`
@@ -55,9 +66,54 @@ type PhotoSource struct {
 	Tiny      string `json:"tiny"`
 }
 
-func (c *Client) SearchPhotos(query string, perPage, page int) SearchResult {
+type VideoSearchResult struct {
+	Page         int32   `json:"page"`
+	PerPage      int32   `json:"per_page"`
+	NextPage     string  `json:"next_page"`
+	TotalResults int32   `json:"total_results"`
+	Videos       []Video `json:"videos"`
+}
+
+type Video struct {
+	Id            int32           `json:"id"`
+	Width         int32           `json:"width"`
+	Height        int32           `json:"height"`
+	Url           string          `json:"url"`
+	Image         string          `json:"image"`
+	FullRes       interface{}     `json:"full_res"`
+	Duration      float64         `json:"duration"`
+	VideoFiles    []VideoFiles    `json:"video_files"`
+	VideoPictures []VideoPictures `json:'video_pictures"`
+}
+
+type PopularVideos struct {
+	Page         int32   `json:"page"`
+	PerPage      int32   `json:"per_page"`
+	TotalResults int32   `json:"total_results"`
+	Url          string  `json:"url"`
+	Videos       []Video `json:"videos"`
+}
+
+type VideoFiles struct {
+	Id       int32  `json:"id"`
+	Quality  string `json:"quality"`
+	FileType string `json:"file_type"`
+	Width    int32  `json:"width"`
+	Height   int32  `json:"height"`
+	Link     string `json:"link"`
+}
+type VideoPictures struct {
+	Id      int32  `json:"id"`
+	Picture string `json:"picture"`
+	Nr      int32  `json:"nr"`
+}
+
+func (c *Client) SearchPhotos(query string, perPage, page int) (*SearchResult, error) {
 	url := fmt.Sprintf(PhotoApi+"/search?query=%s&per_page=%d&page=%d", query, perPage, page)
 	resp, err := c.requestDoWithAuth("GET", url)
+	if err != nil {
+		return nil, err
+	}
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
@@ -67,23 +123,136 @@ func (c *Client) SearchPhotos(query string, perPage, page int) SearchResult {
 	var result SearchResult
 	err = json.Unmarshal(data, &result)
 	return &result, err
+}
+func (c *Client) requestDoWithAuth(method, url string) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", c.Token)
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	times, err := strconv.Atoi(resp.Header.Get("X-Ratelimit-Remaining"))
+	if err != nil {
+		return nil, err
+	} else {
+		c.RemainingTime = int32(times)
+	}
+	return resp, nil
 
 }
 
-func main() {
+func (c *Client) CuratedSearchResult(perPage, page int) (*CuratedResult, error) {
+	url := fmt.Sprintf("%s/curated?per_page=%d&page=%d", PhotoApi, perPage, page)
 
-	var TOKEN = os.Getenv("")
+	resp, err := c.requestDoWithAuth("GET", url)
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, fmt.Errorf("nil response")
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var result CuratedResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (c *Client) GetPhotoById(id int32) (*Photo, error) {
+	url := fmt.Sprintf(PhotoApi+"/photos/%d", id)
+	resp, err := c.requestDoWithAuth("GET", url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var result Photo
+	err = json.Unmarshal(data, &result)
+	return &result, err
+}
+
+func (c *Client) GetRandomPhoto() (*Photo, error) {
+	rand.Seed(time.Now().Unix())
+	randNum := rand.Intn(1001)
+	result, err := c.CuratedSearchResult(1, randNum)
+	if err == nil && len(result.Photos) == 1 {
+		return &result.Photos[0], nil
+	}
+	return nil, err
+}
+
+func (c *Client) SearchVideo(query string, perPage, Page int) (*VideoSearchResult, error) {
+	url := fmt.Sprintf(VideoApi+"/search/query=%s&per_page=%d&page=%d", query, perPage, Page)
+	resp, err := c.requestDoWithAuth("GET", url)
+	if err != nil {
+		fmt.Errorf("issue in function rquest do with auth")
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Errorf("issue in reading response")
+	}
+
+	var result VideoSearchResult
+	err = json.Unmarshal(data, &result)
+	return &result, err
+}
+func (c *Client) PopularVideo(perPage, page int) (*PopularVideos, error) {
+	url := fmt.Sprintf(VideoApi+"/popular?per_page=%d&page=%d", perPage, page)
+	resp, err := c.requestDoWithAuth("GET", url)
+	if err != nil {
+		fmt.Errorf("issue in function rquest do with auth")
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Errorf("issue in reading response")
+	}
+
+	var result PopularVideos
+	err = json.Unmarshal(data, &result)
+	return &result, err
+}
+func (c *Client) GetRandomVideo() (*Video, error) {
+	rand.Seed(time.Now().Unix())
+	randNum := rand.Intn(1001)
+	result, err := c.PopularVideo(1, randNum)
+	if err == nil && len(result.Videos) == 1 {
+		return &result.Videos[0], nil
+	}
+	return nil, err
+}
+
+func main() {
+	os.Setenv("token", "SL29azZ5ifJ4ho6q6e4JvBTuGq8wvBmUjDVwOmBJhU0o7tbf14G6IR75")
+	var TOKEN = os.Getenv("token")
 	var c = NewClient(TOKEN)
 
-	result, err := c.SearchPhotos("Nature")
+	result, err := c.GetRandomVideo()
 
 	if err != nil {
 		panic(err)
 	}
-	if result.Page == 0 {
-		fmt.Errorf("no results found")
+	// if result.Page == 0 {
+	// 	fmt.Errorf("no results found")
 
-	}
+	// }
 	fmt.Println(result)
 
 }

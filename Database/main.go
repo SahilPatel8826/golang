@@ -83,18 +83,69 @@ func(d *driver) Write(collection,resource string,v interface{})error{
 		return err
 	}
 }
-func Read()error{
-	
+func (d *Driver)Read(collection,resource string,v interface{})error{
+	if collection==""{
+		return fmt.Errorf("collection name cannot be empty")
+	}
+	if resource=="" {
+		return fmt.Errorf("resource name cannot be empty")
+		
+	}
+	record:=filepath.Join(d.dir,collection,resource)
+
+	if _,err:=stat(record);err!=nil{
+		return err
+	}
+
+	b,err:=ioutil.ReadFile(record + ".json")
+	if err!=nil{
+		return err
+	}
+
+	return json.Unmarshal(b,&v)
+
+
 }
-func ReadAll()(){
+func (d *Driver)ReadAll(collection string)([]string,error){
+	if collection==""{
+		return nil,fmt.Error{"Missimg Collection - unable to read"}
+
+	}
+	dir:=filepath.Join(d.dir,collection)
+
+	if _,err:=stat(dir);err!=nil{
+		return nil,err
+	}
+
+	files,_:=ioutil.ReadDir(dir)
+
+	var records []string
+
+	for _,file:=range files{
+		b,err:=ioutil.ReadFile(filepath.Join(dir,file.Name()))
+		if err!=nil{
+			return nil,err
+		}
+		records=append(records,string(b))
+
+	}
+	return records,nil
 	
 }
 
 func Delete()error{
 
 }
-func getOrCreateMutex()*sync.Mutex{
+func(d *Driver) getOrCreateMutex(collection string)*sync.Mutex{
+   d.mutex.Lock()
+   defer d.mutex.Unlock()
 
+	m,ok:=d.mutexes[collection]
+
+	if !ok{
+		m=&sync.Mutex{}
+		d.mutexes[collection]=m
+	}
 }
 func stat(path string)( fi os.FileInfo,err error){
 	if fi,err=os.Stat(path);os.IsNotExist(err){

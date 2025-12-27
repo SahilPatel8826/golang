@@ -1,0 +1,12 @@
+{
+	"Name": "Robert",
+	"Age": 29,
+	"Contact": "233444333",
+	"Company": "Microsoft",
+	"Address": {
+		"City": "bangalore",
+		"State": "karnataka",
+		"Country": "india",
+		"Pincode": 410013
+	}
+}

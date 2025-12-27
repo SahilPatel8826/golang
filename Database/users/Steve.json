@@ -1,0 +1,12 @@
+{
+	"Name": "Steve",
+	"Age": 33,
+	"Contact": "233444333",
+	"Company": "Google",
+	"Address": {
+		"City": "bangalore",
+		"State": "karnataka",
+		"Country": "india",
+		"Pincode": 410013
+	}
+}

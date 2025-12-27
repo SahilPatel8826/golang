@@ -8,31 +8,31 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-type lead struct {
+type Lead struct {
 	gorm.Model
 
-	Name    string
-	Company string
-	Email   string
-	Phone   int
+	Name    string `json:"name"`
+	Company string `json:"company"`
+	Email   string `json:"email"`
+	Phone   int    `json:"phone"`
 }
 
 func GetLeads(c *fiber.Ctx) {
 	db := database.DBConn
-	var leads []lead
+	var leads []Lead
 	db.Find(&leads)
 	c.JSON(leads)
 }
 func GetLead(c *fiber.Ctx) {
 	id := c.Params("id")
 	db := database.DBConn
-	var lead lead
+	var lead Lead
 	db.Find(&lead, id)
 	c.JSON(lead)
 }
 func CreateLead(c *fiber.Ctx) {
 	db := database.DBConn
-	lead := new(lead)
+	lead := new(Lead)
 	if err := c.BodyParser(lead); err != nil {
 		c.Status(503).Send(err)
 	}
@@ -43,7 +43,7 @@ func CreateLead(c *fiber.Ctx) {
 
 func DeleteLead(c *fiber.Ctx) {
 	id := c.Params("id")
-	var lead lead
+	var lead Lead
 	db := database.DBConn
 	db.First(&lead, id)
 	if lead.Name == "" {

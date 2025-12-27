@@ -1,0 +1,12 @@
+{
+	"Name": "Neo",
+	"Age": 31,
+	"Contact": "233444333",
+	"Company": "Remote Teams",
+	"Address": {
+		"City": "bangalore",
+		"State": "karnataka",
+		"Country": "india",
+		"Pincode": 410013
+	}
+}

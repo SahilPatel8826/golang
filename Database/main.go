@@ -109,12 +109,12 @@ func (d *Driver) Read(collection, resource string, v interface{}) error {
 		return err
 	}
 
-	return json.Unmarshal(b, &v)
+	return json.Unmarshal(b, v)
 
 }
 func (d *Driver) ReadAll(collection string) ([]string, error) {
 	if collection == "" {
-		return nil, fmt.Errorf("Missimg Collection - unable to read")
+		return nil, fmt.Errorf("Missing Collection - unable to read")
 
 	}
 	dir := filepath.Join(d.dir, collection)
@@ -140,25 +140,26 @@ func (d *Driver) ReadAll(collection string) ([]string, error) {
 }
 
 func (d *Driver) Delete(collection, resource string) error {
-	path := filepath.Join(d.dir, collection, resource)
+	if collection == "" || resource == "" {
+		return fmt.Errorf("collection and resource cannot be empty")
+	}
+
 	mutex := d.getOrCreateMutex(collection)
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	dir := filepath.Join(d.dir, collection)
+	// Full path to the JSON file you want to delete
+	path := filepath.Join(d.dir, collection, resource) + ".json"
 
-	switch fi, err := stat(dir); {
-	case fi == nil, err != nil:
-		return fmt.Errorf("unable to find file or directory named %v\n", path)
-
-	case fi.Mode().IsDir():
-		return os.RemoveAll(dir)
-	case fi.Mode().IsRegular():
-		return os.RemoveAll(dir + ".json")
+	// Check if the file exists
+	if _, err := stat(path); err != nil {
+		return fmt.Errorf("file does not exist: %v", path)
 	}
-	return nil
 
+	// Remove the file
+	return os.Remove(path)
 }
+
 func (d *Driver) getOrCreateMutex(collection string) *sync.Mutex {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -235,9 +236,9 @@ func main() {
 	}
 	fmt.Println("All Users:", alluser)
 
-	// if err := db.Delete("user","john"); err != nil {
-	// 	fmt.Println("Error", err)
-	// }
+	if err := db.Delete("users", "John"); err != nil {
+		fmt.Println("Error", err)
+	}
 	// if err := db.Delete("users",""); err != nil {
 	// 	fmt.Println("Error", err)
 	// }

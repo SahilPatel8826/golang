@@ -176,20 +176,55 @@ import (
 // 	}
 // }
 
-func worker(c <-chan int) {
-	for ran := range c {
-		fmt.Printf("jobdone%d ", ran)
-	}
+// func worker(c <-chan int) {
+// 	for ran := range c {
+// 		fmt.Printf("jobdone%d ", ran)
+// 	}
+// }
+
+// func main() {
+// 	ch := make(chan int)
+// 	go worker(ch)
+
+// 	for i := 0; i < 5; i++ {
+// 		ch <- i
+// 	}
+
+// 	close(ch)
+
+// }
+
+func sliceToChannel(nums []int) <-chan int {
+	out := make(chan int)
+	go func() {
+		for _, n := range nums {
+			fmt.Printf("recieve %d to slicwchannel\n", n)
+			out <- n
+
+		}
+		close(out)
+	}()
+	return out
 }
 
+func sq(in <-chan int) <-chan int {
+	out := make(chan int)
+	go func() {
+		for n := range in {
+			fmt.Printf("recieve %d to sq\n", n)
+			out <- n * n
+
+		}
+		close(out)
+	}()
+	return out
+}
 func main() {
-	ch := make(chan int)
-	go worker(ch)
-
-	for i := 0; i < 5; i++ {
-		ch <- i
+	nums := []int{2, 3, 4, 5}
+	c := sliceToChannel(nums)
+	sqC := sq(c)
+	for n := range sqC {
+		fmt.Println("print", n)
 	}
-
-	close(ch)
 
 }

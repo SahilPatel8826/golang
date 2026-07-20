@@ -23,7 +23,7 @@ func main() {
 	for w := 1; w <= 3; w++ {
 		go worker(w, jobs, results)
 	}
-
+  
 	// Send 5 jobs
 	for j := 1; j <= 5; j++ {
 		jobs <- j
